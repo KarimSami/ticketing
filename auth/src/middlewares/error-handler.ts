@@ -22,8 +22,7 @@ export const errorHandler = (
       errors: [{ message: err.reason }],
     });
   }
-
   res.status(400).send({
-    message: err.message,
+    message: [{ message: "Something went wrong!" }],
   });
 };
