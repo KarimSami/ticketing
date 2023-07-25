@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Password } from "../services/password";
 
 // An interface that describes the properties
 // that are required to create a new User
@@ -30,6 +31,20 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+});
+
+userSchema.pre("save", async function (done) {
+  // this is the document that is being saved
+  // we need to use function keyword to access this
+  // because arrow function does not bind this
+  if (this.isModified("password")) {
+    // only hash the password if it is modified
+    // this is to prevent hashing the password
+    // when we update the email for example
+    const hashed = await Password.toHash(this.get("password"));
+    this.set("password", hashed);
+  }
+  done();
 });
 
 userSchema.statics.build = (attrs: UserAttrs) => {
